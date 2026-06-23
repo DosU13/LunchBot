@@ -1,4 +1,6 @@
+import functools
 import json
+import logging
 import os
 from collections import defaultdict
 
@@ -11,10 +13,14 @@ from telegram.ext import (
 
 load_dotenv()
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 TOKEN = os.getenv('TOKEN')
 CHECK_COLLECTION_GROUP_ID = int(os.getenv('CHECK_COLLECTION_GROUP_ID'))
 MAIN_GROUP_ID = int(os.getenv('MAIN_GROUP_ID'))
 BOT_USERNAME = os.getenv('BOT_USERNAME')
+OWNER_ID = int(os.getenv('OWNER_ID'))
 
 DATA_FILE = 'orders.json'
 
@@ -24,6 +30,34 @@ WAIT_CHECK = 1
 menu: list[str] = []
 # orders: {user_id: {"username": str, "items": [str, ...]}}
 orders: dict[int, dict] = {}
+ordering_open = True
+
+
+def owner_only(func):
+    @functools.wraps(func)
+    async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if update.effective_user is None or update.effective_user.id != OWNER_ID:
+            if update.effective_message:
+                await update.effective_message.reply_text('У вас нет доступа к этой команде.')
+            return
+        return await func(update, context)
+    return wrapper
+
+
+def safe_handler(func):
+    @functools.wraps(func)
+    async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        try:
+            return await func(update, context)
+        except Exception:
+            logger.exception('Error in handler %s', func.__name__)
+            if update.effective_message:
+                try:
+                    await update.effective_message.reply_text('Произошла ошибка. Попробуйте позже.')
+                except Exception:
+                    pass
+            return ConversationHandler.END
+    return wrapper
 
 
 def load_orders():
@@ -43,13 +77,16 @@ def save_orders():
         json.dump(orders, f, ensure_ascii=False, indent=2)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@safe_handler
+@owner_only
+async def open_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not menu:
         await update.message.reply_text('Меню ещё не задано. Сначала используйте /set_menu.')
         return
 
-    global orders
+    global orders, ordering_open
     orders = {}
+    ordering_open = True
     save_orders()
 
     menu_text = '\n'.join(f'• {item}' for item in menu)
@@ -58,6 +95,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Заказы сброшены. Сообщение отправлено в группу.')
 
 
+@safe_handler
+@owner_only
+async def close_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global ordering_open
+    ordering_open = False
+
+    await context.bot.send_message(chat_id=MAIN_GROUP_ID, text='Время заказа закончилось.')
+    await update.message.reply_text('Приём заказов остановлен.')
+
+
+@safe_handler
 async def set_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global menu
     text = update.message.text.replace('/set_menu', '', 1)
@@ -69,7 +117,12 @@ async def set_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text('Меню пустое. Укажите блюда после команды.')
 
 
+@safe_handler
 async def order_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not ordering_open:
+        await update.message.reply_text('Время заказа закончилось.')
+        return ConversationHandler.END
+
     if not menu:
         await update.message.reply_text('Меню ещё не задано. Дождитесь пока организатор установит меню.')
         return ConversationHandler.END
@@ -79,6 +132,7 @@ async def order_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return CHOOSE_ITEM
 
 
+@safe_handler
 async def item_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -98,6 +152,7 @@ async def item_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return WAIT_CHECK
 
 
+@safe_handler
 async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     item = context.user_data.get('chosen_item', '?')
@@ -127,11 +182,13 @@ async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+@safe_handler
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Заказ отменён.')
     return ConversationHandler.END
 
 
+@safe_handler
 async def list_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not orders:
         await update.message.reply_text('Заказов пока нет.')
@@ -161,7 +218,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
 
     order_conv = ConversationHandler(
-        entry_points=[CommandHandler('order', order_start)],
+        entry_points=[CommandHandler('start', order_start)],
         states={
             CHOOSE_ITEM: [CallbackQueryHandler(item_chosen)],
             WAIT_CHECK: [
@@ -171,7 +228,8 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)],
     )
 
-    app.add_handler(CommandHandler('start', start))
+    app.add_handler(CommandHandler('open_orders', open_orders))
+    app.add_handler(CommandHandler('close_orders', close_orders))
     app.add_handler(CommandHandler('set_menu', set_menu))
     app.add_handler(CommandHandler('list', list_orders))
     app.add_handler(order_conv)
