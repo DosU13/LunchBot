@@ -20,12 +20,19 @@ TOKEN = os.getenv('TOKEN')
 CHECK_COLLECTION_GROUP_ID = int(os.getenv('CHECK_COLLECTION_GROUP_ID'))
 MAIN_GROUP_ID = int(os.getenv('MAIN_GROUP_ID'))
 BOT_USERNAME = os.getenv('BOT_USERNAME')
-OWNER_ID = int(os.getenv('OWNER_ID'))
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '').lstrip('@').lower()
 
 DATA_FILE = 'orders.json'
 
 CHOOSE_ITEM = 0
 WAIT_CHECK = 1
+
+CHECK_TIMEOUT_SECONDS = 15 * 60
+CHECK_CAPTION = (
+    'Пожалуйста, отправьте чек (фото или PDF) для подтверждения заказа.\n'
+    'У вас есть 15 минут, иначе заказ будет отменён.\n'
+    'Чтобы отменить заказ самостоятельно, используйте /cancel.'
+)
 
 menu: list[str] = []
 # orders: {user_id: {"username": str, "items": [str, ...]}}
@@ -33,10 +40,16 @@ orders: dict[int, dict] = {}
 ordering_open = True
 
 
+def is_admin(user) -> bool:
+    if user is None or not user.username or not ADMIN_USERNAME:
+        return False
+    return user.username.lower() == ADMIN_USERNAME
+
+
 def owner_only(func):
     @functools.wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        if update.effective_user is None or update.effective_user.id != OWNER_ID:
+        if not is_admin(update.effective_user):
             if update.effective_message:
                 await update.effective_message.reply_text('У вас нет доступа к этой команде.')
             return
@@ -75,6 +88,14 @@ def load_orders():
 def save_orders():
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(orders, f, ensure_ascii=False, indent=2)
+
+
+def record_order(user, item):
+    username = user.full_name or user.username or str(user.id)
+    if user.id not in orders:
+        orders[user.id] = {'username': username, 'items': []}
+    orders[user.id]['items'].append(item)
+    save_orders()
 
 
 @safe_handler
@@ -142,12 +163,27 @@ async def item_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text('Ошибка: блюдо не найдено. Попробуйте снова.')
         return ConversationHandler.END
 
-    context.user_data['chosen_item'] = menu[choice]
-    await query.edit_message_text(f'Вы выбрали: {menu[choice]}')
+    item = menu[choice]
+    context.user_data['chosen_item'] = item
+    await query.edit_message_text(f'Вы выбрали: {item}')
+
+    if is_admin(update.effective_user):
+        record_order(update.effective_user, item)
+        await query.message.reply_text('Заказ принят без оплаты (админ).')
+        return ConversationHandler.END
 
     await query.message.reply_photo(
         photo=open('QR.jpg', 'rb'),
-        caption='Пожалуйста, отправьте чек (фото или PDF) для подтверждения заказа.',
+        caption=CHECK_CAPTION,
+    )
+    return WAIT_CHECK
+
+
+@safe_handler
+async def remind_check(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_photo(
+        photo=open('QR.jpg', 'rb'),
+        caption=CHECK_CAPTION,
     )
     return WAIT_CHECK
 
@@ -158,10 +194,7 @@ async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
     item = context.user_data.get('chosen_item', '?')
     username = user.full_name or user.username or str(user.id)
 
-    if user.id not in orders:
-        orders[user.id] = {'username': username, 'items': []}
-    orders[user.id]['items'].append(item)
-    save_orders()
+    record_order(user, item)
 
     await update.message.reply_text('Ваш заказ подтверждён! Спасибо.')
 
@@ -185,6 +218,17 @@ async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @safe_handler
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Заказ отменён.')
+    return ConversationHandler.END
+
+
+async def order_timeout(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text='Время на отправку чека истекло. Заказ отменён. Чтобы заказать снова, используйте /start.',
+        )
+    except Exception:
+        logger.exception('Error in order_timeout')
     return ConversationHandler.END
 
 
@@ -212,10 +256,15 @@ async def list_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('\n'.join(lines))
 
 
+async def log_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info('Incoming update: %s', update)
+
+
 def main():
     load_orders()
 
     app = Application.builder().token(TOKEN).build()
+    app.add_handler(MessageHandler(filters.ALL, log_update), group=-1)
 
     order_conv = ConversationHandler(
         entry_points=[CommandHandler('start', order_start)],
@@ -223,9 +272,12 @@ def main():
             CHOOSE_ITEM: [CallbackQueryHandler(item_chosen)],
             WAIT_CHECK: [
                 MessageHandler(filters.PHOTO | filters.Document.ALL, check_received),
+                MessageHandler(filters.ALL & ~filters.COMMAND, remind_check),
             ],
+            ConversationHandler.TIMEOUT: [MessageHandler(filters.ALL, order_timeout)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
+        conversation_timeout=CHECK_TIMEOUT_SECONDS,
     )
 
     app.add_handler(CommandHandler('open_orders', open_orders))
