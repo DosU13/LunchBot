@@ -2,6 +2,7 @@ import functools
 import json
 import logging
 import os
+import time
 from collections import defaultdict
 
 from dotenv import load_dotenv
@@ -26,17 +27,23 @@ ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '').lstrip('@').lower()
 FLAT_PRICE = int(os.getenv('DEFAULT_PRICE', DEFAULT_PRICE))
 
 DATA_FILE = 'orders.json'
+PENDING_FILE = 'pending.json'
 
 CHOOSE_ITEM = 0
 WAIT_CHECK = 1
 
 CHECK_TIMEOUT_SECONDS = 15 * 60
+# Как часто напоминать про чек, пока заказ не оплачен.
+CHECK_REMINDER_SECONDS = int(os.getenv('CHECK_REMINDER_SECONDS', 60))
 GROUP_TYPES = ('group', 'supergroup')
 
 # menu: [{'name': str, 'price': int}, ...]
 menu: list[dict] = []
 # orders: {user_id: {"username": str, "items": [{"name": str, "price": int}, ...]}}
 orders: dict[int, dict] = {}
+# pending: заказы, которые ждут чек
+# {user_id: {"username": str, "chat_id": int, "items": [...], "started_at": float}}
+pending: dict[int, dict] = {}
 ordering_open = True
 
 
@@ -141,6 +148,113 @@ def record_order(user, items: list[dict]):
     save_orders()
 
 
+# --- неоплаченные заказы (ждём чек) --------------------------------------
+
+def load_pending():
+    global pending
+    if os.path.exists(PENDING_FILE):
+        with open(PENDING_FILE, 'r', encoding='utf-8') as f:
+            raw = json.load(f)
+        pending = {int(k): v for k, v in raw.items()}
+
+
+def save_pending():
+    with open(PENDING_FILE, 'w', encoding='utf-8') as f:
+        json.dump(pending, f, ensure_ascii=False, indent=2)
+
+
+def add_pending(user, chat_id: int, items: list[dict]):
+    pending[user.id] = {
+        'username': user.full_name or user.username or str(user.id),
+        'chat_id': chat_id,
+        'items': items,
+        'started_at': time.time(),
+    }
+    save_pending()
+
+
+def drop_pending(user_id: int):
+    if pending.pop(user_id, None) is not None:
+        save_pending()
+
+
+def reminder_job_name(user_id: int) -> str:
+    return f'check_reminder:{user_id}'
+
+
+def cancel_reminder(job_queue, user_id: int):
+    if job_queue is None:
+        return
+    for job in job_queue.get_jobs_by_name(reminder_job_name(user_id)):
+        job.schedule_removal()
+
+
+def schedule_reminder(job_queue, user_id: int, chat_id: int):
+    """Напоминаем про чек каждые CHECK_REMINDER_SECONDS, пока заказ не оплачен."""
+    if job_queue is None:
+        logger.warning('JobQueue недоступна, напоминания о чеке отключены.')
+        return
+    cancel_reminder(job_queue, user_id)
+    job_queue.run_repeating(
+        check_reminder_job,
+        interval=CHECK_REMINDER_SECONDS,
+        first=CHECK_REMINDER_SECONDS,
+        name=reminder_job_name(user_id),
+        chat_id=chat_id,
+        user_id=user_id,
+        data={'user_id': user_id},
+    )
+
+
+async def check_reminder_job(context: ContextTypes.DEFAULT_TYPE):
+    user_id = context.job.data['user_id']
+    entry = pending.get(user_id)
+    if not entry:
+        context.job.schedule_removal()
+        return
+
+    left = CHECK_TIMEOUT_SECONDS - (time.time() - entry['started_at'])
+    if left <= 0:
+        drop_pending(user_id)
+        context.job.schedule_removal()
+        return
+
+    total = sum(item.get('price') or 0 for item in entry['items'])
+    minutes_left = max(1, int(left // 60))
+    try:
+        await context.bot.send_message(
+            chat_id=entry['chat_id'],
+            text=(
+                f'Напоминание: заказ на {total} сом ещё не подтверждён.\n'
+                'Отправьте, пожалуйста, чек (фото или PDF).\n'
+                f'Осталось примерно {minutes_left} мин, потом заказ отменится.\n'
+                'Отменить самому — /cancel.'
+            ),
+        )
+    except Exception:
+        logger.exception('Не смог отправить напоминание пользователю %s', user_id)
+
+
+def pending_report() -> str:
+    if not pending:
+        return 'Все, кто заказал, отправили чек. 🎉'
+
+    now = time.time()
+    lines = ['Ждут чек:', '']
+    total_sum = 0
+    for entry in sorted(pending.values(), key=lambda e: e['started_at']):
+        total = sum(item.get('price') or 0 for item in entry['items'])
+        total_sum += total
+        waiting = int((now - entry['started_at']) // 60)
+        names = ', '.join(f"{item['name']}" for item in entry['items'])
+        lines.append(f"• {entry['username']} — {total} сом (ждём {waiting} мин)")
+        lines.append(f'  {names}')
+        lines.append('')
+
+    lines.append(f'Всего: {len(pending)} чел., {total_sum} сом')
+    return '\n'.join(lines)
+
+
 def menu_line(item: dict) -> str:
     return f"{item['name']} — {item['price']} сом"
 
@@ -221,6 +335,10 @@ async def open_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ordering_open = True
     save_orders()
 
+    for user_id in list(pending):
+        cancel_reminder(context.job_queue, user_id)
+        drop_pending(user_id)
+
     menu_text = '\n'.join(f'• {menu_line(item)}' for item in menu)
     text = f'Меню: \n{menu_text}\nМожете заказать через бот — @{BOT_USERNAME}'
     await context.bot.send_message(chat_id=MAIN_GROUP_ID, text=text)
@@ -255,26 +373,42 @@ async def set_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @safe_handler
 @private_or_admin
 async def list_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not orders:
+    if not orders and not pending:
         await update.message.reply_text('Заказов пока нет.')
         return
 
-    grouped: dict[str, list[str]] = defaultdict(list)
-    for data in orders.values():
-        for item in data['items']:
-            grouped[item['name']].append(data['username'])
-
     lines = []
-    total = 0
-    for item, names in grouped.items():
-        count = len(names)
-        total += count
-        lines.append(f'{item} {count}')
-        lines.extend(names)
-        lines.append('')
+    if orders:
+        grouped: dict[str, list[str]] = defaultdict(list)
+        for data in orders.values():
+            for item in data['items']:
+                grouped[item['name']].append(data['username'])
 
-    lines.append(f'Всего {total}')
+        total = 0
+        for item, names in grouped.items():
+            count = len(names)
+            total += count
+            lines.append(f'{item} {count}')
+            lines.extend(names)
+            lines.append('')
+
+        lines.append(f'Всего {total}')
+    else:
+        lines.append('Подтверждённых заказов пока нет.')
+
+    # дополнительно: кто заказал, но ещё не прислал чек
+    if pending:
+        lines.append('')
+        lines.append('———')
+        lines.append(pending_report())
+
     await update.message.reply_text('\n'.join(lines))
+
+
+@safe_handler
+@private_or_admin
+async def pending_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(pending_report())
 
 
 @safe_handler
@@ -353,6 +487,8 @@ async def item_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_text('Заказ принят без оплаты (админ).')
             return ConversationHandler.END
 
+        add_pending(update.effective_user, query.message.chat_id, items)
+        schedule_reminder(context.job_queue, update.effective_user.id, query.message.chat_id)
         await query.message.reply_photo(photo=open('QR.jpg', 'rb'), caption=check_caption(total))
         return WAIT_CHECK
 
@@ -388,8 +524,9 @@ async def item_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @safe_handler
 async def remind_check(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    items = context.user_data.get('pending_items', [])
-    total = sum(item['price'] or 0 for item in items)
+    user_id = update.effective_user.id
+    items = context.user_data.get('pending_items') or (pending.get(user_id) or {}).get('items', [])
+    total = sum(item.get('price') or 0 for item in items)
     await update.message.reply_photo(photo=open('QR.jpg', 'rb'), caption=check_caption(total))
     return WAIT_CHECK
 
@@ -397,7 +534,8 @@ async def remind_check(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @safe_handler
 async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    items = context.user_data.get('pending_items', [])
+    # после перезапуска бота user_data пустая — берём заказ из pending.json
+    items = context.user_data.get('pending_items') or (pending.get(user.id) or {}).get('items', [])
     username = user.full_name or user.username or str(user.id)
 
     if not items:
@@ -405,6 +543,8 @@ async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     record_order(user, items)
+    cancel_reminder(context.job_queue, user.id)
+    drop_pending(user.id)
     context.user_data.clear()
 
     await update.message.reply_text('Ваш заказ подтверждён! Спасибо.')
@@ -428,6 +568,8 @@ async def check_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @safe_handler
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    cancel_reminder(context.job_queue, update.effective_user.id)
+    drop_pending(update.effective_user.id)
     context.user_data.clear()
     await update.message.reply_text('Заказ отменён.')
     return ConversationHandler.END
@@ -435,6 +577,9 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def order_timeout(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
+        if update.effective_user:
+            cancel_reminder(context.job_queue, update.effective_user.id)
+            drop_pending(update.effective_user.id)
         context.user_data.clear()
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -449,10 +594,21 @@ async def log_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info('Incoming update: %s', update)
 
 
+async def restore_reminders(app: Application):
+    """После перезапуска возобновляем напоминания по незакрытым заказам."""
+    now = time.time()
+    for user_id, entry in list(pending.items()):
+        if now - entry['started_at'] >= CHECK_TIMEOUT_SECONDS:
+            drop_pending(user_id)
+            continue
+        schedule_reminder(app.job_queue, user_id, entry['chat_id'])
+
+
 def main():
     load_orders()
+    load_pending()
 
-    app = Application.builder().token(TOKEN).build()
+    app = Application.builder().token(TOKEN).post_init(restore_reminders).build()
     app.add_handler(MessageHandler(filters.ALL, log_update), group=-1)
 
     order_conv = ConversationHandler(
@@ -473,6 +629,7 @@ def main():
     app.add_handler(CommandHandler('close_orders', close_orders))
     app.add_handler(CommandHandler('set_menu', set_menu))
     app.add_handler(CommandHandler('list', list_orders))
+    app.add_handler(CommandHandler('pending', pending_orders))
     app.add_handler(CommandHandler('total', total_orders))
     app.add_handler(order_conv)
 
