@@ -117,6 +117,8 @@ AZ_DEFAULT_CATEGORY = 'Другое'
 AZ_GARNISH_CHOICE_RE = re.compile(r'гарнир\w*\s*\)?\s*\(?\s*(?:по\s+желанию|на\s+выбор)', re.IGNORECASE)
 AZ_GARNISH_NOTE_RE = re.compile(r'\s*\(\s*гарнир\w*\s+(?:по\s+желанию|на\s+выбор)\s*\)|\s+(?:по\s+желанию|на\s+выбор)\b', re.IGNORECASE)
 AZ_GARNISH_SECTION_RE = re.compile(r'^гарнир', re.IGNORECASE)
+# овощной гарнир дороже — к блюду не входит, его заказывают отдельно из раздела "Гарниры"
+AZ_GARNISH_EXTRA_RE = re.compile(r'овощ', re.IGNORECASE)
 # запятые вне скобок: "Кофе 3в1, капучино,латте", но не "Салат (огурец, помидор)" и не "0,5"
 AZ_COMMA_RE = re.compile(r'(?:(?<!\d),|,(?!\d))(?![^(]*\))')
 AZ_LIST_SEPARATOR_RE = re.compile(r'(?:(?<!\d),|,(?!\d))(?![^(]*\))|;|\s+(?:и|или)\s+', re.IGNORECASE)
@@ -224,7 +226,8 @@ def _add_garnish_options(menu: list[dict], garnishes: list[str]):
     ]
     unique = {}
     for garnish in garnishes:
-        unique.setdefault(garnish.lower(), garnish)
+        if not AZ_GARNISH_EXTRA_RE.search(garnish):
+            unique.setdefault(garnish.lower(), garnish)
     if not unique:
         return
     for item in menu:

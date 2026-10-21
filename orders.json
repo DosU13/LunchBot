@@ -1,184 +1,9 @@
 {
-  "6599296386": {
-    "username": "Бегимай",
+  "7465966003": {
+    "username": "Асылбек",
     "items": [
       {
-        "name": "Куриное филе в кляре сливочн соус рис пюре",
-        "price": 260,
-        "supplier": "aizada"
-      }
-    ]
-  },
-  "531412989": {
-    "username": "Danil 🐊",
-    "items": [
-      {
-        "name": "Шашлык из окорочков с гарниром (гречка)",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Яйцо вареное",
-        "price": 20,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "427203251": {
-    "username": "Нуриддин Кадыров",
-    "items": [
-      {
-        "name": "Рагу с курицей",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Компот 0,5",
-        "price": 50,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "646230235": {
-    "username": "baitemir",
-    "items": [
-      {
-        "name": "Бифштекс с гарниром (сложный гарнир)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "925270281": {
-    "username": "Айбек Ренадов",
-    "items": [
-      {
-        "name": "Курица в соусе терияки с гарниром (гречка)",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Самсы курица с сыром",
-        "price": 70,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "785143789": {
-    "username": "Kutman",
-    "items": [
-      {
-        "name": "Манты с мясом (лаза+кетчуп)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "721486160": {
-    "username": "Мыктыбек",
-    "items": [
-      {
-        "name": "Курица в соусе терияки с гарниром (рис)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "8049003523": {
-    "username": "Мирлан Данияров",
-    "items": [
-      {
-        "name": "Пельмени (со сметаной)",
-        "price": 180,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Плов с говядиной (с долькой яйца)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "917187769": {
-    "username": "alina aliaskarova",
-    "items": [
-      {
-        "name": "Курица запечённая в кисло сладком соусе с гарниром (овощной гарнир)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "236800973": {
-    "username": "Аким С",
-    "items": [
-      {
-        "name": "Мясное жаркое с картошкой",
-        "price": 260,
-        "supplier": "aizada"
-      }
-    ]
-  },
-  "591769118": {
-    "username": "Omurchiev Esen",
-    "items": [
-      {
-        "name": "Куриное филе в кляре сливочн соус рис пюре",
-        "price": 260,
-        "supplier": "aizada"
-      }
-    ]
-  },
-  "551722934": {
-    "username": "Ruslan Maratov",
-    "items": [
-      {
-        "name": "Мясное жаркое с картошкой",
-        "price": 260,
-        "supplier": "aizada"
-      }
-    ]
-  },
-  "7326748264": {
-    "username": "Kamchybek Kuzobaev",
-    "items": [
-      {
-        "name": "Плов с говядиной (с долькой яйца)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "881429518": {
-    "username": "Beksultan Kadyrbekov",
-    "items": [
-      {
-        "name": "Курица запечённая в кисло сладком соусе с гарниром (гречка)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "888746868": {
-    "username": "Сamilla",
-    "items": [
-      {
-        "name": "Солянка (сметана+лимон)",
-        "price": 180,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Чалап 0.200",
-        "price": 40,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "8431958582": {
-    "username": "Mukhammed Toichubai uulu",
-    "items": [
-      {
-        "name": "Мушуро мясо Черн грибы 🍆 овощи 🥒 рис",
+        "name": "Манты тыква +мясо+джусай",
         "price": 260,
         "supplier": "aizada"
       }
@@ -188,64 +13,54 @@
     "username": "Nuraiym Baiterekova",
     "items": [
       {
-        "name": "Солянка (сметана+лимон)",
+        "name": "Борщ (со сметаной)",
+        "price": 180,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "6927940807": {
+    "username": "Адыл",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "524976341": {
+    "username": "Мираида",
+    "items": [
+      {
+        "name": "Мушуро мясо Черн грибы 🍄‍🟫 овощи рис",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "540002011": {
+    "username": "Чолпон М",
+    "items": [
+      {
+        "name": "Чечевичный (сметана+лимон)",
         "price": 180,
         "supplier": "aziza"
       },
       {
-        "name": "Печеные пирожки с картошкой/с капустой",
-        "price": 50,
+        "name": "Бухарские с сыром и зеленью (с соусом)",
+        "price": 80,
         "supplier": "aziza"
       }
     ]
   },
-  "7259682181": {
-    "username": "Aibek",
+  "6599296386": {
+    "username": "Бегимай",
     "items": [
       {
-        "name": "Оромо (мясо/картошка) (лаза+кетчуп)",
-        "price": 100,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Оромо (мясо/картошка) (лаза+кетчуп)",
-        "price": 100,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "341375293": {
-    "username": "Asel Moldalieva",
-    "items": [
-      {
-        "name": "Босо лагман (лаза)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "2104204294": {
-    "username": "Aidar Abakir URPO",
-    "items": [
-      {
-        "name": "Фаршированные перцы 2шт",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Плов с говядиной (с долькой яйца)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "7186352087": {
-    "username": "Aidar Orozbekov",
-    "items": [
-      {
-        "name": "Курица запечённая в кисло сладком соусе с гарниром (сложный гарнир)",
-        "price": 230,
-        "supplier": "aziza"
+        "name": "Манты тыква +мясо+джусай",
+        "price": 260,
+        "supplier": "aizada"
       }
     ]
   },
@@ -253,67 +68,7 @@
     "username": "Каныкей Ильясова",
     "items": [
       {
-        "name": "Куриное филе в кляре сливочн соус рис пюре",
-        "price": 260,
-        "supplier": "aizada"
-      }
-    ]
-  },
-  "712949731": {
-    "username": "Aizhan",
-    "items": [
-      {
-        "name": "Курица запечённая в кисло сладком соусе с гарниром (гречка)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "853440790": {
-    "username": "Ilia Belikov",
-    "items": [
-      {
-        "name": "Манты с тыквой (лаза+кетчуп)",
-        "price": 230,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "773356134": {
-    "username": "Нина Шестакова",
-    "items": [
-      {
-        "name": "Солянка (сметана+лимон)",
-        "price": 180,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Каша овсяная (с маслом)",
-        "price": 100,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "1429363684": {
-    "username": "Кайрат",
-    "items": [
-      {
-        "name": "Куриное филе в кляре сливочн соус рис пюре",
-        "price": 260,
-        "supplier": "aizada"
-      },
-      {
-        "name": "Мясное жаркое с картошкой",
-        "price": 260,
-        "supplier": "aizada"
-      }
-    ]
-  },
-  "1479610621": {
-    "username": "Mirlan",
-    "items": [
-      {
-        "name": "Куриное филе в кляре сливочн соус рис пюре",
+        "name": "Манты тыква +мясо+джусай",
         "price": 260,
         "supplier": "aizada"
       }
@@ -323,7 +78,72 @@
     "username": "JOE",
     "items": [
       {
-        "name": "Манты с мясом (лаза+кетчуп)",
+        "name": "Дымдама",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "7186352087": {
+    "username": "Aidar Orozbekov",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "427203251": {
+    "username": "Нуриддин Кадыров",
+    "items": [
+      {
+        "name": "Куурдак с курицей",
+        "price": 230,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Курица запечённая в кисло сладком соусе с гарниром (рис)",
+        "price": 230,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Кола 0,5",
+        "price": 65,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Фанта 0,450",
+        "price": 70,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "462409442": {
+    "username": "Mukanbet Zholdoshbekov",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "469884634": {
+    "username": "Adina Akmyrzaeva",
+    "items": [
+      {
+        "name": "Шашлык из куриной грудки с гарниром (овощной гарнир)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "551722934": {
+    "username": "Ruslan Maratov",
+    "items": [
+      {
+        "name": "Плов с говядиной (с долькой яйца)",
         "price": 230,
         "supplier": "aziza"
       }
@@ -333,59 +153,389 @@
     "username": "Max🏮",
     "items": [
       {
-        "name": "Бухарская с сыром и зеленью (с соусом)",
-        "price": 80,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Рагу с курицей",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Фаршированные перцы 2шт",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Куриные котлеты с гарниром (сложный гарнир)",
-        "price": 230,
-        "supplier": "aziza"
-      },
-      {
-        "name": "Солянка (сметана+лимон)",
-        "price": 180,
+        "name": "Понини с тунцом",
+        "price": 250,
         "supplier": "aziza"
       },
       {
         "name": "Самсы курица с сыром",
-        "price": 70,
-        "supplier": "aziza"
-      }
-    ]
-  },
-  "8991681602": {
-    "username": "Zarina Begalieva",
-    "items": [
-      {
-        "name": "Оромо (с тыквой ) (лаза+кетчуп)",
-        "price": 100,
+        "price": 80,
         "supplier": "aziza"
       },
       {
-        "name": "Оромо (с тыквой ) (лаза+кетчуп)",
+        "name": "Борщ (со сметаной)",
+        "price": 180,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "984021741": {
+    "username": "Daniiar",
+    "items": [
+      {
+        "name": "Чечевичный крем суп пирожок с капустой",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "8049003523": {
+    "username": "Мирлан Данияров",
+    "items": [
+      {
+        "name": "Дымдама",
+        "price": 260,
+        "supplier": "aizada"
+      },
+      {
+        "name": "Плов с говядиной (с долькой яйца)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "7301281576": {
+    "username": "Toktobubu Almazbekova",
+    "items": [
+      {
+        "name": "Чечевичный крем суп пирожок с капустой",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "8475833126": {
+    "username": "Касиет Алишерова",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "531412989": {
+    "username": "Danil 🐊",
+    "items": [
+      {
+        "name": "Шашлык из куриной грудки с гарниром (гречка)",
+        "price": 230,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Яйцо вареное",
+        "price": 20,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Яйцо вареное",
+        "price": 20,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "646230235": {
+    "username": "baitemir",
+    "items": [
+      {
+        "name": "Фрикасе с гарниром (сложный гарнир)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "5253603708": {
+    "username": "Hesdi",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "6297101763": {
+    "username": "Рита Абдылдаева",
+    "items": [
+      {
+        "name": "Свекла с рукколой и с яблоком",
+        "price": 200,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Бухарские самсы с мясом (с соусом)",
+        "price": 90,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Яйцо вареное",
+        "price": 20,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "1479610621": {
+    "username": "Mirlan",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "1050703376": {
+    "username": "Zhanarkhan",
+    "items": [
+      {
+        "name": "Шашлык из куриной грудки с гарниром (овощной гарнир)",
+        "price": 230,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Яйцо вареное",
+        "price": 20,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Яйцо вареное",
+        "price": 20,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "428092512": {
+    "username": "Askat D.",
+    "items": [
+      {
+        "name": "Фрикасе с гарниром (рис)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "642096161": {
+    "username": "Bermet",
+    "items": [
+      {
+        "name": "Куурдак с курицей",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "917187769": {
+    "username": "alina aliaskarova",
+    "items": [
+      {
+        "name": "Плов с говядиной (с долькой яйца)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "7942280923": {
+    "username": "Aizirek Turdubaeva",
+    "items": [
+      {
+        "name": "Оромо (мясо+картошка) (лаза+кетчуп)",
+        "price": 120,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Блинчики с творогом 2шт",
+        "price": 80,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "808571060": {
+    "username": "Azat Azhibekov",
+    "items": [
+      {
+        "name": "Манты с мясом (лаза+кетчуп)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "925270281": {
+    "username": "Айбек Ренадов",
+    "items": [
+      {
+        "name": "Курица в соусе терияки с гарниром (макароны)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "5082933554": {
+    "username": "Meerim",
+    "items": [
+      {
+        "name": "Борщ (со сметаной)",
+        "price": 180,
+        "supplier": "aziza"
+      },
+      {
+        "name": "лаза+кетчуп)",
         "price": 100,
         "supplier": "aziza"
       }
     ]
   },
-  "656916983": {
-    "username": "Нурия",
+  "429389723": {
+    "username": "Altynai S",
     "items": [
       {
-        "name": "Оромо (с тыквой ) (лаза+кетчуп)",
-        "price": 100,
+        "name": "Борщ (со сметаной)",
+        "price": 180,
         "supplier": "aziza"
+      }
+    ]
+  },
+  "518703022": {
+    "username": "Nurbek Murataliev",
+    "items": [
+      {
+        "name": "Чечевичный крем суп пирожок с капустой",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "7259682181": {
+    "username": "Aibek",
+    "items": [
+      {
+        "name": "Самсы с мясом",
+        "price": 80,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Самсы с мясом",
+        "price": 80,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Самсы с мясом",
+        "price": 80,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "591769118": {
+    "username": "Omurchiev Esen",
+    "items": [
+      {
+        "name": "Бифштекс гарнир",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "7326748264": {
+    "username": "Kamchybek Kuzobaev",
+    "items": [
+      {
+        "name": "Тефтели с гарниром (сложный гарнир)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "8246485487": {
+    "username": "Uran Asanaliev",
+    "items": [
+      {
+        "name": "Плов с говядиной (с долькой яйца)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "712949731": {
+    "username": "Aizhan",
+    "items": [
+      {
+        "name": "Борщ (со сметаной)",
+        "price": 180,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "8051776965": {
+    "username": "Арсен ГУ Кызмат",
+    "items": [
+      {
+        "name": "Фрикасе с гарниром (рис)",
+        "price": 230,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Кола 0,5",
+        "price": 65,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "1629136885": {
+    "username": "Нур. Айбекова",
+    "items": [
+      {
+        "name": "Куриная запеканка с картошкой по деревенски 🧀 сыр",
+        "price": 260,
+        "supplier": "aizada"
+      }
+    ]
+  },
+  "620371242": {
+    "username": "Doslan Zheksheev",
+    "items": [
+      {
+        "name": "Мушуро мясо Черн грибы 🍄‍🟫 овощи рис",
+        "price": 260,
+        "supplier": "aizada"
+      },
+      {
+        "name": "Куурдак с курицей",
+        "price": 230,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Бифштекс с гарниром (сложный гарнир)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "7742160856": {
+    "username": "Зарлык Жусубалиев",
+    "items": [
+      {
+        "name": "Бухарские самсы с мясом (с соусом)",
+        "price": 90,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Бухарские с сыром и зеленью (с соусом)",
+        "price": 80,
+        "supplier": "aziza"
+      },
+      {
+        "name": "Курица запечённая в кисло сладком соусе с гарниром (рис)",
+        "price": 230,
+        "supplier": "aziza"
+      }
+    ]
+  },
+  "785143789": {
+    "username": "Kutman",
+    "items": [
+      {
+        "name": "Мушуро мясо Черн грибы 🍄‍🟫 овощи рис",
+        "price": 260,
+        "supplier": "aizada"
       }
     ]
   }
